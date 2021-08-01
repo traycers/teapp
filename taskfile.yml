@@ -1,0 +1,64 @@
+# https://taskfile.dev
+
+version: "3"
+vars:
+  cmake_project_file: teapp{{exeExt}}
+  cmake_build_dir: build
+  cleaner_path: cleaner{{exeExt}}
+
+tasks:
+  configure:
+    desc: generate cmake files
+    dir: "{{ .cmake_build_dir }}"
+    cmds:
+      - cmake ..
+    sources:
+      - ./../CMakeLists.txt
+      - ./../teapp/CMakeLists.txt
+    generates:
+      - CMakeCache.txt
+
+  build:
+    desc: build {{ .cmake_project_file }}
+    dir: "{{ .cmake_build_dir }}"
+    deps:
+      - configure
+    cmds:
+      - cmake --build .
+    sources:
+      - ./../CMakeLists.txt
+      - ./../sources/*.cpp
+      - ./../include/*.hpp
+      - ./../sources/*.hpp
+      - ./../sources/*.h
+    generates:
+      - "bin/debug/{{ .cmake_project_file }}"
+
+  run:
+    desc: run {{ .cmake_project_file }}
+    deps:
+      - build
+    cmds:
+      - "./{{ .cmake_build_dir }}/bin/debug/{{ .cmake_project_file }}"
+
+  # build_cleaner:
+  #   desc: build cleaner
+  #   dir: ./cleaner
+  #   cmds:
+  #     - go build -o ../{{ .cleaner_path }} .
+  #   sources:
+  #     - ./*.go
+  #   generates:
+  #     - "../{{ .cleaner_path }}"
+
+  clean:
+    cmds:
+      - " go run cleaner/main.go
+        --path {{ .cmake_build_dir }}
+        --path .task
+        --path .vscode
+        --path conan "
+
+  default:
+    cmds:
+      - task: run

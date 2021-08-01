@@ -1,0 +1,9 @@
+[generators]
+# cmake_multi
+cmake
+
+[requires]
+fmt/8.0.1
+
+[options]
+fmt:shared = False
