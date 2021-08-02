@@ -49,6 +49,7 @@ jobs:
           sudo apt install clang-11 --install-suggests
           cmake --version
           clang++ --version
+          docker --version
       - name: Configure
         shell: bash
         run: |
