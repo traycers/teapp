@@ -13,7 +13,9 @@ if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/conan.cmake")
                   "${CMAKE_CURRENT_SOURCE_DIR}/conan.cmake")
 endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/conan.cmake)
-conan_cmake_run(BASIC_SETUP CONANFILE ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.txt)
+conan_cmake_run(CONANFILE ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.txt
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
 
 
 add_subdirectory(teapp)
