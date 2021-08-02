@@ -34,15 +34,18 @@ jobs:
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
-          choco install ninja cmake conan
+          pip3 install conan
+          conan --version
+          choco install ninja cmake
           ninja --version
           cmake --version
-          python --version
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
         run: |
+          pip3 install conan
+          conan --version
           sudo apt update
-          sudo apt install ninja-build cmake conan
+          sudo apt install ninja-build cmake
           sudo apt install clang-11 --install-suggests
           ninja --version
           cmake --version
