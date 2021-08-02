@@ -52,7 +52,6 @@ jobs:
       - name: Configure
         shell: bash
         run: |
-          docker --version
           mkdir build
           mkdir install_dir
           cmake \
@@ -63,9 +62,9 @@ jobs:
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }}
-      - name: Install Strip
-        shell: bash
-        run: cmake --install .
+      # - name: Install Strip
+      #   shell: bash
+      #   run: cmake --install .
       - name: Pack
         shell: bash
         working-directory: install_dir
