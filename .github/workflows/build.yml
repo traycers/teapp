@@ -22,12 +22,12 @@ jobs:
           - {
               name: "Ubuntu latest clang",
               os: ubuntu-latest,
-              artifact: "ubuntu_gcc.7z",
+              artifact: "ubuntu_clang.7z",
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
               archiver: "7z a",
-              generators: "Ninja",
+              generators: "Unix Makefiles",
             }
     steps:
       - uses: actions/checkout@v2
@@ -45,9 +45,8 @@ jobs:
           pip3 install conan
           conan --version
           sudo apt update
-          sudo apt install ninja-build cmake
+          sudo apt install cmake
           sudo apt install clang-11 --install-suggests
-          ninja --version
           cmake --version
           clang++ --version
       - name: Configure
@@ -65,7 +64,7 @@ jobs:
         run: cmake --build build --config ${{ matrix.config.build_type }}
       - name: Install Strip
         shell: bash
-        run: cmake --install . --strip
+        run: cmake --install .
       - name: Pack
         shell: bash
         working-directory: install_dir
