@@ -52,6 +52,7 @@ jobs:
       - name: Configure
         shell: bash
         run: |
+          docker --version
           mkdir build
           mkdir install_dir
           cmake \
@@ -59,7 +60,6 @@ jobs:
             -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}"
-          docker --version
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }}
