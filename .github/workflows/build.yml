@@ -78,7 +78,7 @@ jobs:
       - name: Pack
         shell: bash
         # working-directory: build
-        working-directory: artifacts/${{ matrix.config.build_type }}
+        # working-directory: artifacts/${{ matrix.config.build_type }}
         run: |
           ls .
           ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
