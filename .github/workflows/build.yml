@@ -50,13 +50,14 @@ jobs:
           pip3 install conan
           choco install cmake
       - name: Install dependencies on ubuntu
-        # sudo apt install clang-11 --install-suggests
-        # clang++ --version
-        if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
+        if: startsWith(matrix.config.name, 'Ubuntu Latest clang')
         run: |
-          pip3 install conan
           sudo apt update
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt install software-properties-common, python3.9
+          sudo apt install clang-11 --install-suggests
           sudo apt install cmake
+          pip3 install conan
       - name: Configure
         shell: bash
         run: |
@@ -79,7 +80,7 @@ jobs:
         shell: bash
         working-directory: build/artifacts
         run: |
-          ls -laR
+          ls .
           ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
       - name: Upload
         uses: actions/upload-artifact@v1
