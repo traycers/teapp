@@ -73,7 +73,7 @@ jobs:
         shell: bash
         run: |
           cmake --build build --config ${{ matrix.config.build_type }}
-          ls -al
+          ls -al .
       # - name: Install Strip
       #   shell: bash
       #   run: cmake --install .
@@ -81,10 +81,11 @@ jobs:
         shell: bash
         working-directory: ./build/teapp/bin/
         # working-directory: artifacts/${{ matrix.config.build_type }}
+        # ${{ matrix.config.archiver }} ./../../../../${{ matrix.config.artifact }} .
         run: |
-          ls -al
-          ${{ matrix.config.archiver }} ./../../../../${{ matrix.config.artifact }} .
-          ls -al ./../../../..
+          ls -al .
+          ${{ matrix.config.archiver }} ${{ matrix.config.artifact }} .
+          ls -al .
       - name: Upload
         uses: actions/upload-artifact@v1
         with:
