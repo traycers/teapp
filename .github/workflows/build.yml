@@ -88,6 +88,7 @@ jobs:
           ls -al .
       - name: Upload
         uses: actions/upload-artifact@v1
+        working-directory: ./build/teapp/bin/
         with:
           path: ./${{ matrix.config.artifact }}
           name: ${{ matrix.config.artifact }}
