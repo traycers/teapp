@@ -79,7 +79,7 @@ jobs:
       #   run: cmake --install .
       - name: Pack
         shell: bash
-        working-directory: ./build/teapp/${{ matrix.config.build_type }}
+        working-directory: ./build/teapp/bin/
         # working-directory: artifacts/${{ matrix.config.build_type }}
         run: |
           ls -al
