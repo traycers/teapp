@@ -31,29 +31,39 @@ jobs:
             }
     steps:
       - uses: actions/checkout@v2
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v5.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: ${{ steps.tag_version.outputs.changelog }}
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
           pip3 install conan
-          conan --version
-          choco install ninja cmake
-          ninja --version
-          cmake --version
+          choco install cmake
       - name: Install dependencies on ubuntu
+        # sudo apt install clang-11 --install-suggests
+        # clang++ --version
         if: startsWith(matrix.config.name, 'Ubuntu Latest GCC')
         run: |
           pip3 install conan
-          conan --version
           sudo apt update
           sudo apt install cmake
-          sudo apt install clang-11 --install-suggests
-          cmake --version
-          clang++ --version
       - name: Configure
         shell: bash
         run: |
+          cmake --version
+          conan --version
+          python --version
           mkdir build
-          mkdir install_dir
           cmake \
             -S . \
             -B build \
@@ -67,7 +77,7 @@ jobs:
       #   run: cmake --install .
       - name: Pack
         shell: bash
-        working-directory: install_dir
+        working-directory: build/artifacts
         run: |
           ls -laR
           ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
