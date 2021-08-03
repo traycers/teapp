@@ -77,10 +77,10 @@ jobs:
       #   run: cmake --install .
       - name: Pack
         shell: bash
-        # working-directory: build
+        working-directory: ./build
         # working-directory: artifacts/${{ matrix.config.build_type }}
         run: |
-          ls .
+          ls -alR
           ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
       - name: Upload
         uses: actions/upload-artifact@v1
