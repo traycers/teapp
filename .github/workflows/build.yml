@@ -71,7 +71,9 @@ jobs:
             -G "${{ matrix.config.generators }}"
       - name: Build
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }}
+        run: |
+          ls -al
+          cmake --build build --config ${{ matrix.config.build_type }}
       # - name: Install Strip
       #   shell: bash
       #   run: cmake --install .
@@ -80,8 +82,8 @@ jobs:
         working-directory: ./build
         # working-directory: artifacts/${{ matrix.config.build_type }}
         run: |
-          ls -alR
-          ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
+          ls -al
+          ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} ./teapp/${{ matrix.config.build_type }}/*.*
       - name: Upload
         uses: actions/upload-artifact@v1
         with:
