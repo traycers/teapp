@@ -77,9 +77,9 @@ jobs:
       #   run: cmake --install .
       - name: Pack
         shell: bash
-        working-directory: build/artifacts
+        working-directory: build
         run: |
-          ls .
+          ls artifacts
           ls build/artifacts
         run: |
           ${{ matrix.config.archiver }} ../${{ matrix.config.artifact }} .
