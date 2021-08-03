@@ -87,10 +87,9 @@ jobs:
           ${{ matrix.config.archiver }} ${{ matrix.config.artifact }} .
           ls -al .
       - name: Upload
-        uses: actions/upload-artifact@v1
-        working-directory: ./build/teapp/bin/
+        uses: actions/upload-artifact@v2
         with:
-          path: ./${{ matrix.config.artifact }}
+          path: ./build/teapp/bin/${{ matrix.config.artifact }}
           name: ${{ matrix.config.artifact }}
       - name: Upload release asset
         if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
