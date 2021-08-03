@@ -83,7 +83,8 @@ jobs:
         # working-directory: artifacts/${{ matrix.config.build_type }}
         run: |
           ls -al
-          ${{ matrix.config.archiver }} ../../../../${{ matrix.config.artifact }} .
+          ${{ matrix.config.archiver }} ./../../../../${{ matrix.config.artifact }} .
+          ls -al ./../../../..
       - name: Upload
         uses: actions/upload-artifact@v1
         with:
