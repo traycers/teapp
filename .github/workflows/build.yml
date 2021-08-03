@@ -72,8 +72,9 @@ jobs:
       - name: Build
         shell: bash
         run: |
-          ls -al
           cmake --build build --config ${{ matrix.config.build_type }}
+          ls -al
+          ls -al ./build
       # - name: Install Strip
       #   shell: bash
       #   run: cmake --install .
