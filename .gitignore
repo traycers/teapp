@@ -4,6 +4,7 @@
 .idea
 .vs
 [Bb]uild
+artifacts
 
 # Prerequisites
 *.d
