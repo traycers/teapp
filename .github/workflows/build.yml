@@ -18,7 +18,7 @@ jobs:
           - {
               name: "Windows latest MSVC",
               os: windows-latest,
-              artifact: ${{ artifacts_name_windows }},
+              artifact: ${{ env.artifacts_name_windows }},
               build_type: "Release",
               cc: "cl",
               cxx: "cl",
@@ -29,7 +29,7 @@ jobs:
           - {
               name: "Ubuntu latest Clang",
               os: ubuntu-latest,
-              artifact: ${{ artifacts_name_ubuntu }},
+              artifact: ${{ env.artifacts_name_ubuntu }},
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
@@ -83,6 +83,7 @@ jobs:
         working-directory: ./build/teapp/bin/
         run: |
           ${{ matrix.config.archiver }} ${{ matrix.config.artifact }} .
+
       - name: Create a GitHub release
         uses: actions/create-release@v1
         id: create_release
@@ -96,7 +97,7 @@ jobs:
           prerelease: false
           
       - name: Upload release asset
-        if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
+        # if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
