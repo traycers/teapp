@@ -43,12 +43,13 @@ jobs:
           choco install cmake
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.name, 'Ubuntu Latest clang')
-        # sudo apt install clang-11 --install-suggests
         run: |
           sudo apt update
           sudo apt install cmake
           sudo apt install python3.9-dev
+          sudo apt install clang-11 --install-suggests
           pip3 install conan
+          clang++ --version
       - name: Configure
         shell: bash
         run: |
@@ -66,18 +67,11 @@ jobs:
         run: |
           cmake --build build --config ${{ matrix.config.build_type }}
           ls -al .
-      # - name: Install Strip
-      #   shell: bash
-      #   run: cmake --install .
       - name: Pack
         shell: bash
         working-directory: ./build/teapp/bin/
-        # working-directory: artifacts/${{ matrix.config.build_type }}
-        # ${{ matrix.config.archiver }} ./../../../../${{ matrix.config.artifact }} .
         run: |
-          ls -al .
           ${{ matrix.config.archiver }} ${{ matrix.config.artifact }} .
-          ls -al .
       - name: Create a GitHub release
         uses: actions/create-release@v1
         id: create_release
@@ -90,8 +84,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Upload release asset
-        # if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
-        # upload_url: ${{ github.event.release.upload_url }}
+        if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
