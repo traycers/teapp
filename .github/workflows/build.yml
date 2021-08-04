@@ -62,7 +62,7 @@ jobs:
           ${{ env.archiver }} ${{ env.artifact }} .
 
       - name: Release artifacts
-        use: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: windows_artifacts
           path: ${{ env.artifacts_name_windows }}
