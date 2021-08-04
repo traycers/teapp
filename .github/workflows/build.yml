@@ -1,11 +1,11 @@
 name: building
-on: 
+on:
   push:
-    branches: 
+    branches:
       - main
 env:
-  artifacts_name_windows : "windows_msvc.zip"
-  artifacts_name_ubuntu  : "ubuntu_clang.zip"
+  artifacts_name_windows: "windows_msvc.zip"
+  artifacts_name_ubuntu: "ubuntu_clang.zip"
 
 jobs:
   build:
@@ -17,8 +17,8 @@ jobs:
         config:
           - {
               name: "Windows latest MSVC",
-              os: windows-latest,
-              artifact: "windows_msvc.7z",
+              os: "windows-latest",
+              artifact: "${{ env.artifacts_name_windows }}",
               build_type: "Release",
               cc: "cl",
               cxx: "cl",
@@ -29,7 +29,7 @@ jobs:
           - {
               name: "Ubuntu latest Clang",
               os: "ubuntu-latest",
-              artifact: ${{ env.artifacts_name_ubuntu }},
+              artifact: "${{ env.artifacts_name_ubuntu }}",
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
@@ -43,13 +43,13 @@ jobs:
         uses: mathieudutour/github-tag-action@v5.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Install dependencies on windows
         if: startsWith(matrix.config.os, 'windows')
         run: |
           pip3 install conan
           choco install cmake
-          
+
       - name: Install dependencies on ubuntu
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
@@ -59,7 +59,7 @@ jobs:
           sudo apt install clang-11 --install-suggests
           pip3 install conan
           clang++ --version
-          
+
       - name: Configure
         shell: bash
         run: |
@@ -72,12 +72,12 @@ jobs:
             -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
             -G "${{ matrix.config.generators }}"
-            
+
       - name: Build
         shell: bash
         run: |
           cmake --build build --config ${{ matrix.config.build_type }}
-            
+
       - name: Pack
         shell: bash
         working-directory: ./build/teapp/bin/
@@ -95,7 +95,7 @@ jobs:
           body: ${{ steps.tag_version.outputs.changelog }}
           draft: false
           prerelease: false
-          
+
       - name: Upload release asset
         # if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
         uses: actions/upload-release-asset@v1
