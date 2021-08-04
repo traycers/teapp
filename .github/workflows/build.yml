@@ -8,34 +8,17 @@ env:
   artifacts_name_ubuntu: "ubuntu_clang.zip"
 
 jobs:
-  build:
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {
-              name: "Windows latest MSVC",
-              os: "windows-latest",
-              artifact: "${{ env.artifacts_name_windows }}",
-              build_type: "Release",
-              cc: "cl",
-              cxx: "cl",
-              environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat",
-              archiver: "7z a",
-              generators: "Visual Studio 16 2019",
-            }
-          - {
-              name: "Ubuntu latest Clang",
-              os: "ubuntu-latest",
-              artifact: "${{ env.artifacts_name_ubuntu }}",
-              build_type: "Release",
-              cc: "clang",
-              cxx: "clang++",
-              archiver: "7z a",
-              generators: "Unix Makefiles",
-            }
+  windows_building:
+    name: "Windows latest, msvc"
+    runs-on: windows-latest
+    env:
+      generators: "Visual Studio 16 2019"
+      archiver: "7z a"
+      artifact: ${{ env.artifacts_name_windows }}
+      build_type: "Release"
+      cc: "cl"
+      cxx: "cl"
+
     steps:
       - uses: actions/checkout@v2
       - name: Bump version and push tag
@@ -44,21 +27,14 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install dependencies on windows
-        if: startsWith(matrix.config.os, 'windows')
+      - name: Add msbuild to PATH
+        # uses: microsoft/setup-msbuild@v1.0.2
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Install dependencies
         run: |
           pip3 install conan
           choco install cmake
-
-      - name: Install dependencies on ubuntu
-        if: startsWith(matrix.config.os, 'ubuntu')
-        run: |
-          sudo apt update
-          sudo apt install cmake
-          sudo apt install python3.9-dev
-          sudo apt install clang-11 --install-suggests
-          pip3 install conan
-          clang++ --version
 
       - name: Configure
         shell: bash
@@ -70,39 +46,45 @@ jobs:
           cmake \
             -S . \
             -B build \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
-            -G "${{ matrix.config.generators }}"
+            -DCMAKE_BUILD_TYPE=${{ env.build_type }} \
+            -G "${{ env.generators }}"
 
       - name: Build
         shell: bash
         run: |
-          cmake --build build --config ${{ matrix.config.build_type }}
+          cmake --build build --config ${{ env.build_type }}
 
       - name: Pack
+        id: pack_artifacts
         shell: bash
         working-directory: ./build/teapp/bin/
         run: |
-          ${{ matrix.config.archiver }} ${{ matrix.config.artifact }} .
+          ${{ env.archiver }} ${{ env.artifact }} .
 
-      - name: Create a GitHub release
-        uses: actions/create-release@v1
-        id: create_release
-        env:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Release artifacts
+        use: actions/upload-artifact@v2
         with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
-          draft: false
-          prerelease: false
+          name: windows_artifacts
+          path: ${{ env.artifacts_name_windows }}
 
-      - name: Upload release asset
-        # if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./build/teapp/bin/${{ matrix.config.artifact }}
-          asset_name: ${{ matrix.config.artifact }}
-          asset_content_type: application/zip
+      # - name: Create a GitHub release
+      #   uses: actions/create-release@v1
+      #   id: create_release
+      #   env:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     tag_name: ${{ steps.tag_version.outputs.new_tag }}
+      #     release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+      #     body: ${{ steps.tag_version.outputs.changelog }}
+      #     draft: false
+      #     prerelease: false
+      # - name: Upload release asset
+      #   # if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./build/teapp/bin/${{ matrix.config.artifact }}
+      #     asset_name: ${{ matrix.config.artifact }}
+      #     asset_content_type: application/zip
