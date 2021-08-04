@@ -17,7 +17,7 @@ jobs:
         config:
           - {
               name: "Windows latest MSVC",
-              os: windows-latest,
+              os: "windows-latest",
               artifact: ${{ env.artifacts_name_windows }},
               build_type: "Release",
               cc: "cl",
@@ -28,7 +28,7 @@ jobs:
             }
           - {
               name: "Ubuntu latest Clang",
-              os: ubuntu-latest,
+              os: "ubuntu-latest",
               artifact: ${{ env.artifacts_name_ubuntu }},
               build_type: "Release",
               cc: "clang",
