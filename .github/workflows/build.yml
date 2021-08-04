@@ -80,6 +80,7 @@ jobs:
           ls -al .
       - name: Create a GitHub release
         uses: actions/create-release@v1
+        id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -90,11 +91,11 @@ jobs:
           prerelease: false
       - name: Upload release asset
         # if: github.event_name == 'release' && (github.event.action == 'published' || github.event.action == 'created')
+        # upload_url: ${{ github.event.release.upload_url }}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          # upload_url: ${{ github.event.release.upload_url }}
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./build/teapp/bin/${{ matrix.config.artifact }}
           asset_name: ${{ matrix.config.artifact }}.zip
